@@ -17,7 +17,7 @@ public class TowerOfHanoiGame extends JFrame {
 
     public TowerOfHanoiGame() {
         setTitle("Tower of Hanoi Game");
-        setSize(1000, 700);
+        setSize(1000,700);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
@@ -96,7 +96,7 @@ public class TowerOfHanoiGame extends JFrame {
             addMouseListener(new MouseAdapter() {
                 @Override
                 public void mousePressed(MouseEvent e) {
-                    if (isSolving) return; // Don't allow dragging while solving
+                    if (isSolving) return;
 
                     int rodIndex = getRodIndex(e.getX());
                     if (rodIndex != -1 && !rods[rodIndex].isEmpty()) {
@@ -140,10 +140,43 @@ public class TowerOfHanoiGame extends JFrame {
             });
         }
 
+        private void showWinDialog() {
+            JDialog winDialog = new JDialog((Frame)SwingUtilities.getWindowAncestor(this), "Congratulations!", true);
+            winDialog.setLayout(new BorderLayout());
+            winDialog.setSize(400, 200);
+            winDialog.setLocationRelativeTo(this);
+
+            JPanel messagePanel = new JPanel();
+            JLabel messageLabel = new JLabel("Congratulations! You've solved the puzzle in " + moves + " moves!");
+            messageLabel.setFont(new Font("Serif", Font.BOLD, 16));
+            messagePanel.add(messageLabel);
+
+            JPanel buttonPanel = new JPanel();
+            JButton continueButton = new JButton("Continue");
+            JButton homeButton = new JButton("Go to Home");
+
+            continueButton.addActionListener(e -> {
+                winDialog.dispose();
+                initializeGame(); // Reset the game for continuing
+            });
+
+            homeButton.addActionListener(e -> {
+                winDialog.dispose();
+                TowerOfHanoiGame.this.dispose(); // Close the game window
+            });
+
+            buttonPanel.add(continueButton);
+            buttonPanel.add(homeButton);
+
+            winDialog.add(messagePanel, BorderLayout.CENTER);
+            winDialog.add(buttonPanel, BorderLayout.SOUTH);
+            winDialog.setVisible(true);
+        }
+
         private void onResetButtonClicked() {
             try {
                 numDisks = Integer.parseInt(numDisksInput.getText());
-                if (numDisks < 3 || numDisks >8) {
+                if (numDisks < 3 || numDisks > 8) {
                     JOptionPane.showMessageDialog(this, "Please enter a valid number of disks (3-8).");
                     return;
                 }
@@ -181,8 +214,7 @@ public class TowerOfHanoiGame extends JFrame {
 
         private void checkWin() {
             if (rods[2].size() == numDisks) {
-                JOptionPane.showMessageDialog(null, "Congratulations! You've solved the puzzle in " + moves + " moves.");
-                initializeGame();
+                showWinDialog();
             }
         }
 
